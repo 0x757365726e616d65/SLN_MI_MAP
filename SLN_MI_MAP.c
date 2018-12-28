@@ -67,7 +67,7 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
     DIR *DataDP = opendir(NewDataPath);
     if(DataDP == NULL)
     {
-        printf("\nError in opening directory. \n");
+        printf("\nError in opening directory. => 1ST \n");
         return -1;
     }
     char *DataName = (char *) calloc(512, sizeof(char));
@@ -80,13 +80,11 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
     
     short Flag = 0;
     int DataNum = 0, Nth = 0;
+    //__Counting_the_Number_of_Data__//
     while((DataDirInfo = readdir(DataDP)))
     {
-        //Judge_Data_In_New_or_Previous_Format//
-        if((strstr(DataDirInfo -> d_name, ".img")))
+        if(((strstr(DataDirInfo -> d_name, ".img")) || (strstr(DataDirInfo -> d_name, ".IMG"))) && (strstr(DataDirInfo -> d_name, "MI_MAP")))
             DataNum += 1;
-        else if((strstr(DataDirInfo -> d_name, ".lbl")) && (Flag != 1))
-            Flag = 1;
     }
     closedir(DataDP);
     DataDP = NULL;
@@ -94,20 +92,22 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
     DataDP = opendir(NewDataPath);
     if(DataDP == NULL)
     {
-        printf("\nError in opening directory. \n");
+        printf("\nError in opening directory. => 2ND \n");
         return -1;
     }
     while((DataDirInfo = readdir(DataDP)))
     {
+        //__Declarations_of_Variables_in_Reading_Data_and_Label_Files__//
         long ptr_shift = 0, start = 0, start_geo = 0;
         char *p_inline = NULL;
+        //__Declarations_of_Label_Parameters__//
         int lines = 0, samples = 0, bytes = 0;
         double latnst = 0, lonwst = 0;
         double map_resolution = 0, scaling_factor = 0, offset = 0;
         double line_projection_offset = 0, sample_projection_offset = 0;
         char line[1024] = {'\0'};
         
-        if((strstr(DataDirInfo -> d_name, ".img")))
+        if(((strstr(DataDirInfo -> d_name, ".img")) || (strstr(DataDirInfo -> d_name, ".IMG"))) && (strstr(DataDirInfo -> d_name, "MI_MAP")))
         {
             Nth += 1;
             printf("\nSum = %d, Now = %d\n", DataNum, Nth);
@@ -117,18 +117,22 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             strcpy(NewDataPath0, NewDataPath);
             if((fd_Data = fopen(strcat(NewDataPath0, DataName), "r")) == NULL)
             {
-                printf("\nError in opening data. \n");
+                printf("\nError in opening data. => Data = %s\n", DataName);
                 return -1;
             }
             printf("Data:\t%s\n", DataName);
             
-            if(Flag == 0)
+            //__Judging_Data_in_New_or_Previous_Format//
+            fseek(fd_Data, 0, SEEK_SET);
+            if(strstr(fgets(line, sizeof(line), fd_Data), "PDS_VERSION_ID"))
             {
+                Flag = 0;
                 fd_Label = fd_Data;
                 strcpy(LabelName, DataName);
             }
-            else if(Flag == 1)
+            else
             {
+                Flag = 1;
                 strcpy(LabelName, DataName);
                 LabelName[strlen(LabelName) - 3] = 'l';
                 LabelName[strlen(LabelName) - 2] = 'b';
@@ -138,7 +142,7 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
                 strcpy(NewDataPath0, NewDataPath);
                 if((fd_Label = fopen(strcat(NewDataPath0, LabelName), "r")) == NULL)
                 {
-                    printf("\nError in opening labels. \n");
+                    printf("\nError in opening the label file. => Label = %s\n", LabelName);
                     return -1;
                 }
             }
@@ -146,6 +150,7 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
         
             //__Label_Parameters__//
             short Flag_SampleType = 0;
+            fseek(fd_Label, 0, SEEK_SET);
             while((strcmp(fgets(line, sizeof(line), fd_Label), "END\r\n")))
             {
                 if((strstr(line, "MSB_INTEGER")))
