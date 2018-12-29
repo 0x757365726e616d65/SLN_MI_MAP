@@ -72,7 +72,7 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
     }
     char *DataName = (char *) calloc(512, sizeof(char));
     char *LabelName = (char *) calloc(512, sizeof(char));
-    char **DataNameList = (char **) malloc(1 * sizeof(char *));
+    char **DataNameList = (char **) calloc(1 * sizeof(char *));
     if((DataName == NULL) || (LabelName == NULL) || (DataNameList == NULL))
     {
         printf("\nError in allocating memory. \n");
