@@ -25,11 +25,11 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int SLN_MI_MAP(char *DataPath, char *OutputPath);  // char *CalMode //
+int SLN_MI_MAP(const char *DataPath, const char *OutputPath, const char *OutputPreFix);  // char *CalMode //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
+int SLN_MI_MAP(const char *DataPath, const char *OutputPath, const char *OutputPreFix)  // char *CalMode //
 {
     //__Directory_Path_End_Check__//
     unsigned short DataPathLen = strlen(DataPath);
@@ -67,7 +67,7 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
     DIR *DataDP = opendir(NewDataPath);
     if(DataDP == NULL)
     {
-        printf("\nError in opening directory. => 1ST \n");
+        printf("\nError in opening directory. \n");
         return -1;
     }
     char *DataName = (char *) calloc(256, sizeof(char));
@@ -107,7 +107,11 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
         }
     }
     free(DataDirInfo);
-    closedir(DataDP);
+    if((closedir(DataDP)))
+    {
+        printf("\nError in closing directory. \n");
+        return -1;
+    }
     DataDirInfo = NULL;
     DataDP = NULL;
     //
@@ -273,7 +277,11 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
         //__Release_Label_FILE_Pointers__//
         if(Flag == 1)
         {
-            fclose(fd_Label);
+            if((fclose(fd_Label)))
+            {
+                printf("\nError in closing the label file. \n");
+                return -1;
+            }
             fd_Label = NULL;
         }
         else
@@ -577,7 +585,11 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
         //
         
         //__Release_Data_FILE_Pointers__//
-        fclose(fd_Data);
+        if((fclose(fd_Data)))
+        {
+            printf("\nError in closing the data file. \n");
+            return -1;
+        }
         fd_Data = NULL;
         //
         //
@@ -586,9 +598,9 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
         //__FeO__//
         memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
-        if((fd_Out = fopen(strcat(NewOutputPath0, "FeO.txt"), "a")) == NULL)
+        if((fd_Out = fopen(strcat(strcat(NewOutputPath0, OutputPreFix), "FeO.txt"), "a")) == NULL)
         {
-            printf("\nError in opening files. \n");
+            printf("\nError in opening 'FeO.txt' files. \n");
             return -1;
         }
         
@@ -606,16 +618,21 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
                     fprintf(fd_Out, "%.8lf\t%.8lf\t%.8lf\n", lon, lat, fe[i][j]);
             }
         }
-        fclose(fd_Out);
+        
+        if((fclose(fd_Out)))
+        {
+            printf("\nError in closing output 'FeO.txt' files. \n");
+            return -1;
+        }
         fd_Out = NULL;
         //
         
         //__TiO2__//
         memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
-        if((fd_Out = fopen(strcat(NewOutputPath0, "TiO2.txt"), "a")) == NULL)
+        if((fd_Out = fopen(strcat(strcat(NewOutputPath0, OutputPreFix), "TiO2.txt"), "a")) == NULL)
         {
-            printf("\nError in opening files. \n");
+            printf("\nError in opening 'TiO2.txt' files. \n");
             return -1;
         }
         
@@ -632,16 +649,21 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
                     fprintf(fd_Out, "%.8lf\t%.8lf\t%.8lf\n", lon, lat, ti[i][j]);
             }
         }
-        fclose(fd_Out);
+        
+        if((fclose(fd_Out)))
+        {
+            printf("\nError in closing output 'TiO2.txt' files. \n");
+            return -1;
+        }
         fd_Out = NULL;
         //
         
         //__Density__//
         memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
-        if((fd_Out = fopen(strcat(NewOutputPath0, "Density.txt"), "a")) == NULL)
+        if((fd_Out = fopen(strcat(strcat(NewOutputPath0, OutputPreFix), "Density.txt"), "a")) == NULL)
         {
-            printf("\nError in opening files. \n");
+            printf("\nError in opening 'Density.txt' files. \n");
             return -1;
         }
         
@@ -656,16 +678,21 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
                 fprintf(fd_Out, "%.8lf\t%.8lf\t%.8lf\n", lon, lat, den[i][j]);
             }
         }
-        fclose(fd_Out);
+        
+        if((fclose(fd_Out)))
+        {
+            printf("\nError in closing output 'Density.txt' files. \n");
+            return -1;
+        }
         fd_Out = NULL;
         //
         
         //__Real_Dielectric__//
         memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
-        if((fd_Out = fopen(strcat(NewOutputPath0, "RealDielectric.txt"), "a")) == NULL)
+        if((fd_Out = fopen(strcat(strcat(NewOutputPath0, OutputPreFix), "RealDielectric.txt"), "a")) == NULL)
         {
-            printf("\nError in opening files. \n");
+            printf("\nError in opening 'RealDielectric.txt' files. \n");
             return -1;
         }
         
@@ -685,16 +712,21 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
                 fprintf(fd_Out, "%.8lf\t%.8lf\t%.8lf\n", lon, lat, re_diel[i][j]);
             }
         }
-        fclose(fd_Out);
+        
+        if((fclose(fd_Out)))
+        {
+            printf("\nError in closing output 'RealDielectric.txt' files. \n");
+            return -1;
+        }
         fd_Out = NULL;
         //
         
         //__Imaginary_Dielectric__//
         memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
-        if((fd_Out = fopen(strcat(NewOutputPath0, "ImaginaryDielectric.txt"), "a")) == NULL)
+        if((fd_Out = fopen(strcat(strcat(NewOutputPath0, OutputPreFix), "ImaginaryDielectric.txt"), "a")) == NULL)
         {
-            printf("\nError in opening files. \n");
+            printf("\nError in opening 'ImaginaryDielectric.txt' files. \n");
             return -1;
         }
         
@@ -714,16 +746,21 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
                 fprintf(fd_Out, "%.8lf\t%.8lf\t%.8lf\n", lon, lat, im_diel[i][j]);
             }
         }
-        fclose(fd_Out);
+        
+        if((fclose(fd_Out)))
+        {
+            printf("\nError in closing output 'ImaginaryDielectric.txt' files. \n");
+            return -1;
+        }
         fd_Out = NULL;
         //
         
         //__d0_Normalized_Penetration_Depth__//
         memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
-        if((fd_Out = fopen(strcat(NewOutputPath0, "d0_NormalizedPenetrationDepth.txt"), "a")) == NULL)
+        if((fd_Out = fopen(strcat(strcat(NewOutputPath0, OutputPreFix), "d0_NormalizedPenetrationDepth.txt"), "a")) == NULL)
         {
-            printf("\nError in opening files. \n");
+            printf("\nError in opening 'd0_NormalizedPenetrationDepth.txt' files. \n");
             return -1;
         }
         
@@ -738,16 +775,21 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
                 fprintf(fd_Out, "%.8lf\t%.8lf\t%.8lf\n", lon, lat, d0[i][j]);
             }
         }
-        fclose(fd_Out);
+        
+        if((fclose(fd_Out)))
+        {
+            printf("\nError in closing output 'd0_NormalizedPenetrationDepth.txt' files. \n");
+            return -1;
+        }
         fd_Out = NULL;
         //
         
         //__OMAT__//
         memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
-        if((fd_Out = fopen(strcat(NewOutputPath0, "OMAT.txt"), "a")) == NULL)
+        if((fd_Out = fopen(strcat(strcat(NewOutputPath0, OutputPreFix), "OMAT.txt"), "a")) == NULL)
         {
-            printf("\nError in opening files. \n");
+            printf("\nError in opening 'OMAT.txt' files. \n");
             return -1;
         }
         
@@ -762,7 +804,12 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
                 fprintf(fd_Out, "%.8lf\t%.8lf\t%.8lf\n", lon, lat, omat[i][j]);
             }
         }
-        fclose(fd_Out);
+        
+        if((fclose(fd_Out)))
+        {
+            printf("\nError in closing output 'OMAT.txt' files. \n");
+            return -1;
+        }
         fd_Out = NULL;
         //
         //
