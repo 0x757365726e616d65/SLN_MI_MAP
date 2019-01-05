@@ -35,10 +35,10 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
     unsigned short DataPathLen = strlen(DataPath);
     unsigned short OutputPathLen = strlen(OutputPath);
     
-    char *NewDataPath = (char *) calloc(512, sizeof(char));
-    char *NewDataPath0 = (char *) calloc(512, sizeof(char));
-    char *NewOutputPath = (char *) calloc(512, sizeof(char));
-    char *NewOutputPath0 = (char *) calloc(512, sizeof(char));
+    char *NewDataPath = (char *) calloc(256, sizeof(char));
+    char *NewDataPath0 = (char *) calloc(256, sizeof(char));
+    char *NewOutputPath = (char *) calloc(256, sizeof(char));
+    char *NewOutputPath0 = (char *) calloc(256, sizeof(char));
     if(NewDataPath == NULL || NewDataPath0 == NULL || NewOutputPath == NULL || NewOutputPath0 == NULL)
     {
         printf("\nError in allocating memory. \n");
@@ -70,9 +70,9 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
         printf("\nError in opening directory. => 1ST \n");
         return -1;
     }
-    char *DataName = (char *) calloc(512, sizeof(char));
-    char *LabelName = (char *) calloc(512, sizeof(char));
-    char **DataNameList = (char **) calloc(1 * sizeof(char *));
+    char *DataName = (char *) calloc(256, sizeof(char));
+    char *LabelName = (char *) calloc(256, sizeof(char));
+    char **DataNameList = (char **) calloc(1, sizeof(char *));
     if((DataName == NULL) || (LabelName == NULL) || (DataNameList == NULL))
     {
         printf("\nError in allocating memory. \n");
@@ -80,10 +80,10 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
     }
     //
     
-    short Flag = 0;
-    unsigned int DataNum = 0, Nth = 0;
     //__Counting_the_Number_of_Data__//
     //__Writing_the_Data_Name_List__//
+    short Flag = 0;
+    unsigned int DataNum = 0, Nth = 0;
     while((DataDirInfo = readdir(DataDP)))
     {
         if(((strstr(DataDirInfo -> d_name, ".img")) || (strstr(DataDirInfo -> d_name, ".IMG"))) && (strstr(DataDirInfo -> d_name, "MI_MAP")))
@@ -131,7 +131,7 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
         //
         
         strcpy(DataName, *(DataNameList + Nth - 1));
-        memset(NewDataPath0, 0, 512);
+        memset(NewDataPath0, 0, 256);
         strcpy(NewDataPath0, NewDataPath);
         if((fd_Data = fopen(strcat(NewDataPath0, DataName), "r")) == NULL)
         {
@@ -156,7 +156,7 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             LabelName[strlen(LabelName) - 2] = 'b';
             LabelName[strlen(LabelName) - 1] = 'l';
             
-            memset(NewDataPath0, 0, 512);
+            memset(NewDataPath0, 0, 256);
             strcpy(NewDataPath0, NewDataPath);
             if((fd_Label = fopen(strcat(NewDataPath0, LabelName), "r")) == NULL)
             {
@@ -269,6 +269,16 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             
             memset(line, 0, sizeof(line));
         }
+        
+        //__Release_Label_FILE_Pointers__//
+        if(Flag == 1)
+        {
+            fclose(fd_Label);
+            fd_Label = NULL;
+        }
+        else
+            fd_Label = NULL;
+        //
         //
         
         //__Decalarations_of_Parameters__//
@@ -565,11 +575,16 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             }
         }
         //
+        
+        //__Release_Data_FILE_Pointers__//
+        fclose(fd_Data);
+        fd_Data = NULL;
+        //
         //
         
         //__Computations_of_Output_Products__//
         //__FeO__//
-        memset(NewOutputPath0, 0, 512);
+        memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
         if((fd_Out = fopen(strcat(NewOutputPath0, "FeO.txt"), "a")) == NULL)
         {
@@ -592,10 +607,11 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             }
         }
         fclose(fd_Out);
+        fd_Out = NULL;
         //
         
         //__TiO2__//
-        memset(NewOutputPath0, 0, 512);
+        memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
         if((fd_Out = fopen(strcat(NewOutputPath0, "TiO2.txt"), "a")) == NULL)
         {
@@ -617,10 +633,11 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             }
         }
         fclose(fd_Out);
+        fd_Out = NULL;
         //
         
         //__Density__//
-        memset(NewOutputPath0, 0, 512);
+        memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
         if((fd_Out = fopen(strcat(NewOutputPath0, "Density.txt"), "a")) == NULL)
         {
@@ -640,10 +657,11 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             }
         }
         fclose(fd_Out);
+        fd_Out = NULL;
         //
         
         //__Real_Dielectric__//
-        memset(NewOutputPath0, 0, 512);
+        memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
         if((fd_Out = fopen(strcat(NewOutputPath0, "RealDielectric.txt"), "a")) == NULL)
         {
@@ -668,10 +686,11 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             }
         }
         fclose(fd_Out);
+        fd_Out = NULL;
         //
         
         //__Imaginary_Dielectric__//
-        memset(NewOutputPath0, 0, 512);
+        memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
         if((fd_Out = fopen(strcat(NewOutputPath0, "ImaginaryDielectric.txt"), "a")) == NULL)
         {
@@ -696,10 +715,11 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             }
         }
         fclose(fd_Out);
+        fd_Out = NULL;
         //
         
         //__d0_Normalized_Penetration_Depth__//
-        memset(NewOutputPath0, 0, 512);
+        memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
         if((fd_Out = fopen(strcat(NewOutputPath0, "d0_NormalizedPenetrationDepth.txt"), "a")) == NULL)
         {
@@ -719,10 +739,11 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             }
         }
         fclose(fd_Out);
+        fd_Out = NULL;
         //
         
         //__OMAT__//
-        memset(NewOutputPath0, 0, 512);
+        memset(NewOutputPath0, 0, 256);
         strcpy(NewOutputPath0, NewOutputPath);
         if((fd_Out = fopen(strcat(NewOutputPath0, "OMAT.txt"), "a")) == NULL)
         {
@@ -742,6 +763,7 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
             }
         }
         fclose(fd_Out);
+        fd_Out = NULL;
         //
         //
         
@@ -836,15 +858,9 @@ int SLN_MI_MAP(char *DataPath, char *OutputPath)  // char *CalMode //
     //
     
     //__Release_Pointers__//
-    fclose(fd_Data);
-    fclose(fd_Label);
-    fclose(fd_Out);
     free(DataName);
     free(LabelName);
     
-    fd_Data = NULL;
-    fd_Label = NULL;
-    fd_Out = NULL;
     DataName = NULL;
     LabelName = NULL;
     //
