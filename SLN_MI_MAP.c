@@ -1,8 +1,5 @@
 //
-//  SLN_MI_MAP.c / SLN_MI_MAP.h  //
-//
-//  Created by MingleZhao on 2018/12/21.
-//  Copyright © 2018 Peking University. All rights reserved.
+//  SLN_MI_MAP.c / SLN_MI_MAP.h 
 //
 
 #include <stdio.h>
